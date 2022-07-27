@@ -41,7 +41,7 @@ void DMA2_Channel4_5_IRQHandler()
 	{
 		printf_dma_flag=0;
 		DMA_Cmd(DMA2_Channel5,DISABLE);
-		//USART_DMACmd(myUSARTx,USART_DMAReq_Tx,DISABLE);
+		USART_DMACmd(myUSARTx,USART_DMAReq_Tx,DISABLE);
 		DMA_ClearITPendingBit(DMA2_IT_TC5);
 	}
 }

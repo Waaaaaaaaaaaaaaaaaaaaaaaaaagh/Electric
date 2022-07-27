@@ -148,3 +148,11 @@ Project/example.uvguix.a2230
 Project/Objects/dma.crf
 Project/Objects/dma.o
 Project/Objects/usartplus.o
+Project/Objects/dma.crf
+Project/Objects/dma.o
+Project/Objects/usartplus.crf
+Project/Objects/usartplus.o
+Project/Objects/dma.crf
+Project/Objects/dma.o
+Project/Objects/usartplus.crf
+Project/Objects/usartplus.o
