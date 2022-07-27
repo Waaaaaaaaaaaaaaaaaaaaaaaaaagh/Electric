@@ -1,6 +1,8 @@
 #ifndef _SERVO_H_
 #define _SERVO_H_
 
+#include "stdint.h"
+
 #define	RCC_APBPeriph_TIMx_GPIOx1			RCC_APB2Periph_GPIOA
 #define	RCC_APBPeriph_TIMx1					RCC_APB2Periph_TIM1
 #define	SERVO1_PORT							GPIOA
@@ -33,4 +35,6 @@ extern void TIM_SERVO_Init(void);
 extern void Servo_Open(void);
 extern void Servo_Close(void);
 extern void Test_Servo(void);
+extern void Servo_drive(float angle,uint16_t Ch);
+extern void Servo_reset(void);
 #endif

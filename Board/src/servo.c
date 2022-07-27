@@ -155,13 +155,49 @@ void Servo_Close(void)
   */
 void Test_Servo(void)
 {
-    TIM_SetCompare1(SERVO1_TIM, 1000);
-    TIM_SetCompare2(SERVO1_TIM, 1000);
-    TIM_SetCompare3(SERVO1_TIM, 1000);
-    TIM_SetCompare4(SERVO1_TIM, 1000);
-    TIM_SetCompare1(SERVO2_TIM, 0);    // PA15
-    TIM_SetCompare2(SERVO3_TIM, 3000); // PB3
-    TIM_SetCompare3(SERVO3_TIM, 4000); // PB10
-    TIM_SetCompare4(SERVO3_TIM, 5000); // PB11
-    Delay_MS(1000);
+  float k = -90;
+  while(1)
+  {
+    Servo_drive(k,SERVO1_TIM_CH1_PIN);/* 底层舵机 *//* X 轴 *//* Yaw 轴 */
+		Servo_drive(k,SERVO1_TIM_CH2_PIN);/* 顶层舵机 *//* Y 轴 *//* Pitch 轴 */
+    k += 1;
+    if( k == 91 )
+			break;
+		Delay_MS(100);
+  }
+    
+		
+}
+
+
+/**
+ @brief           用于驱动舵机
+ @return          void
+ @param angle     期望转动的角度，单位为度
+ @param Ch        对应的引脚
+*/
+
+void Servo_drive(float angle,uint16_t Ch)
+{
+  uint16_t compare;
+  if( Ch == SERVO1_TIM_CH1_PIN )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 左为负，右为正 */
+  {
+    compare = 1500 - (int)( angle*7 );
+    TIM_SetCompare1(SERVO1_TIM, compare);
+  }
+  if( Ch == SERVO1_TIM_CH2_PIN )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 下为负，上为正 */
+  {
+    compare = 1500 + (int)( angle*95/9 );
+    TIM_SetCompare2(SERVO1_TIM, compare);
+  }
+}
+
+/**
+ @brief           复位舵机
+ @return          void
+ */
+void Servo_reset(void)
+{
+  TIM_SetCompare1(SERVO1_TIM, 1500);
+  TIM_SetCompare2(SERVO1_TIM, 1500);
 }
