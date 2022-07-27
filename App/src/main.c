@@ -17,7 +17,7 @@ float ADC_ConvertedValueLocal[NOFCHANEL];
 
 int main()
 {
-	TIM_SERVO_Init();
+	//TIM_SERVO_Init();
 	OLED_init();
 	Delay_Init();
 	ray_init();
@@ -28,5 +28,6 @@ int main()
 	{
 		//OLED_show8x16number(5,15,3);
 		print_plus("%d",1);
+		Delay_MS(100);
 	}
 }

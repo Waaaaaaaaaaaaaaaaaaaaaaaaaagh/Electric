@@ -24,7 +24,7 @@ void to_extern_Init()
 	temp.DMA_MemoryDataSize=DMA_MemoryDataSize_Byte;
 	temp.DMA_PeripheralDataSize=DMA_MemoryDataSize_Byte;
 	temp.DMA_DIR=DMA_DIR_PeripheralSRC;
-	//temp.DMA_BufferSize=1;
+	temp.DMA_BufferSize=1;
 	temp.DMA_PeripheralInc=DMA_PeripheralInc_Disable;
 	temp.DMA_MemoryInc=DMA_MemoryInc_Enable;
 	temp.DMA_M2M = DMA_M2M_Disable;

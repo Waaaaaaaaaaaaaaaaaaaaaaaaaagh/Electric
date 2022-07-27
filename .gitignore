@@ -144,3 +144,7 @@ CMSIS/startup/startup_stm32f10x_hd.s
 Project/Objects/ray.crf
 Project/Objects/ray.d
 Project/Objects/ray.o
+Project/example.uvguix.a2230
+Project/Objects/dma.crf
+Project/Objects/dma.o
+Project/Objects/usartplus.o
