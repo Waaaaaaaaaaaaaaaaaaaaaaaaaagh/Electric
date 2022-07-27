@@ -15,10 +15,20 @@ float ADC_ConvertedValueLocal[NOFCHANEL];
 
 int main()
 {
+	TIM_SERVO_Init();
 	OLED_init();
+	Delay_Init();
+	ray_init();
 	OLED_clear();
+
+
+	Servo_reset();
+
 	while(1)
 	{
-		//OLED_show8x16number(5,15,3);
+		ray_on();
+		Servo_drive(0,SERVO1_TIM_CH1_PIN);/* µ×²ã¶æ»ú *//* X Öá *//* Yaw Öá */
+		Servo_drive(0,SERVO1_TIM_CH2_PIN);/* ¶¥²ã¶æ»ú *//* Y Öá *//* Pitch Öá */
+		//Test_Servo();
 	}
 }

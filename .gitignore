@@ -141,3 +141,6 @@ CMSIS/system_stm32f10x.h
 CMSIS/CoreSupport/core_cm3.c
 CMSIS/CoreSupport/core_cm3.h
 CMSIS/startup/startup_stm32f10x_hd.s
+Project/Objects/ray.crf
+Project/Objects/ray.d
+Project/Objects/ray.o
