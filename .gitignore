@@ -156,3 +156,9 @@ Project/Objects/dma.crf
 Project/Objects/dma.o
 Project/Objects/usartplus.crf
 Project/Objects/usartplus.o
+Project/Objects/dma.crf
+Project/Objects/dma.d
+Project/Objects/dma.o
+Project/Objects/usartplus.crf
+Project/Objects/usartplus.d
+Project/Objects/usartplus.o
