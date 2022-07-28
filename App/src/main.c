@@ -24,10 +24,13 @@ int main()
 	OLED_clear();
 	MYUSART_Init();
 	to_extern_Init();
+
+	//Servo_reset();
+
 	while(1)
 	{
 		//OLED_show8x16number(5,15,3);
-		print_plus("%d",1);
+		//print_plus("%d",1);
 		Delay_MS(100);
 	}
 }
