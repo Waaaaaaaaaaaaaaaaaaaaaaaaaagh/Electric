@@ -8,13 +8,17 @@
 max_Typedef ADC_Channel_max_time[NOFCHANEL];
 Channel_Info_Typedef Channel_Info[NOFCHANEL]; 
 
+static uint16_t normalization(uint16_t temp,int j)
+{
+    return (temp-Channel_Info[j].MIN)/(Channel_Info[j].MAX-Channel_Info[j].MIN);
+}
+
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL])
 {
 	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*NOFCHANEL);
     for(int i=0;i<6;i++)//初始化
     {
         Channel_Info[i].number=0;
-        Channel_Info[i].StdDeviation=0;
         Channel_Info[i].id=0;
         Channel_Info[i].last_value=Channel_Info[i].average;
     }

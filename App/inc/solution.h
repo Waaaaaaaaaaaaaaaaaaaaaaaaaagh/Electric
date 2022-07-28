@@ -16,9 +16,10 @@ typedef struct
     const uint16_t HIGH;
     const uint16_t average;
     const uint16_t NUMBERMUST;
-    float StdDeviation; 
+    const uint16_t MAX;
+    const uint16_t MIN;
     int number;
-    int last_value;
+    uint16_t last_value;
     uint16_t id;
 }Channel_Info_Typedef;
 
