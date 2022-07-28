@@ -90,23 +90,44 @@ void GPIO_EXIT_Init(void)
 ***/
 void KEY_IRQHandle1(void)
 {
+  static int k = 0;
 
     if (EXTI_GetFlagStatus(KEY1_EXTI_LINE))
     {
+      k++;
         if (KEY1 == 0)
         {
-            LED1_TOGGLE;
-            Usart_SendString(USARTx, "gotta111\n");
+          if( k%2 == 0 )
+          {
+            Servo_drive(0,SERVO1_Low);
+            Servo_drive(0,SERVO1_High);
+          }
+          else
+          {
+            Servo_drive(45,SERVO1_Low);
+            Servo_drive(60,SERVO1_High);
+          }
+           
         }
         EXTI_ClearITPendingBit(KEY1_EXTI_LINE);
     }
 
     if (EXTI_GetFlagStatus(KEY2_EXTI_LINE))
     {
+      k++;
         if (KEY2 == 0)
         {
-            LED2_TOGGLE;
-            Usart_SendString(USARTx, "wanna222\n");
+          if( k%2 == 0 )
+          {
+            Servo_drive(0,SERVO1_Low);
+            Servo_drive(0,SERVO1_High);
+          }
+          else
+          {
+            Servo_drive(-45,SERVO1_Low);
+            Servo_drive(-60,SERVO1_High);
+          }
+           
         }
         EXTI_ClearITPendingBit(KEY2_EXTI_LINE);
     }

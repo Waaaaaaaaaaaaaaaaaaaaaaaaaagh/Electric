@@ -22,7 +22,7 @@ void TIM_SERVO_Init(void)
     GPIO_PinRemapConfig(GPIO_FullRemap_TIM2, ENABLE);
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;                                                                  //复用推挽输出
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;                                                                //设置输出频率
-    GPIO_InitStructure.GPIO_Pin = SERVO1_TIM_CH1_PIN | SERVO1_TIM_CH2_PIN | SERVO1_TIM_CH3_PIN | SERVO1_TIM_CH4_PIN; //设置GPIO管脚
+    GPIO_InitStructure.GPIO_Pin = SERVO1_Low | SERVO1_High | SERVO1_TIM_CH3_PIN | SERVO1_TIM_CH4_PIN; //设置GPIO管脚
     GPIO_Init(SERVO1_PORT, &GPIO_InitStructure);                                                                     //初始化GPIO
 
     GPIO_InitStructure.GPIO_Pin = SERVO2_TIM_CH2_PIN | SERVO2_TIM_CH3_PIN | SERVO2_TIM_CH4_PIN; //设置GPIO管脚
@@ -158,8 +158,8 @@ void Test_Servo(void)
   float k = -90;
   while(1)
   {
-    Servo_drive(k,SERVO1_TIM_CH1_PIN);/* 底层舵机 *//* X 轴 *//* Yaw 轴 */
-		Servo_drive(k,SERVO1_TIM_CH2_PIN);/* 顶层舵机 *//* Y 轴 *//* Pitch 轴 */
+    Servo_drive(k,SERVO1_Low);/* 底层舵机 *//* X 轴 *//* Yaw 轴 */
+		Servo_drive(k,SERVO1_High);/* 顶层舵机 *//* Y 轴 *//* Pitch 轴 */
     k += 1;
     if( k == 91 )
 			break;
@@ -179,16 +179,50 @@ void Test_Servo(void)
 
 void Servo_drive(float angle,uint16_t Ch)
 {
+  static float upper = 0;
+  static float lower = 0;
   uint16_t compare;
-  if( Ch == SERVO1_TIM_CH1_PIN )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 左为负，右为正 */
+  if( Ch == SERVO1_Low )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 左为负，右为正 */
   {
-    compare = 1500 - (int)( angle*7 );
-    TIM_SetCompare1(SERVO1_TIM, compare);
+    if( angle >= lower)
+    {
+      compare = 1500 - (int)( (angle + 35)*7 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+      compare = 1500 - (int)( angle*7 );
+      Delay_MS(250);
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+    else
+    {
+      compare = 1500 - (int)( (angle - 20)*7 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+      compare = 1500 - (int)( angle*7 );
+      Delay_MS(250);
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+
+    lower = angle;
   }
-  if( Ch == SERVO1_TIM_CH2_PIN )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 下为负，上为正 */
+  if( Ch == SERVO1_High )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 下为负，上为正 */
   {
-    compare = 1500 + (int)( angle*95/9 );
-    TIM_SetCompare2(SERVO1_TIM, compare);
+    if( angle >= upper )
+    {
+      compare = 1500 + (int)( (angle + 35)*95/9 );
+      TIM_SetCompare2(SERVO1_TIM, compare);
+      compare = 1500 + (int)( angle*95/9 );
+      Delay_MS(250);
+      TIM_SetCompare2(SERVO1_TIM, compare);
+    }
+    else
+    {
+      compare = 1500 + (int)( (angle - 20)*95/9 );
+      TIM_SetCompare2(SERVO1_TIM, compare);
+      compare = 1500 + (int)( angle*95/9 );
+      Delay_MS(250);
+      TIM_SetCompare2(SERVO1_TIM, compare);
+    }
+
+    upper = angle;
   }
 }
 
