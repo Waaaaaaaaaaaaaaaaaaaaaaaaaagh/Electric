@@ -2,6 +2,7 @@
 #define __SOLUTION__
 
 #include "stm32f10x.h"
+#include "adc.h"
 
 typedef struct 
 {
@@ -12,12 +13,17 @@ typedef struct
 typedef struct
 {
     const uint16_t LOW;
-    
-}Channnel_Info;
+    const uint16_t HIGH;
+    const uint16_t average;
+    const uint16_t NUMBERMUST;
+    const uint16_t MAX;
+    const uint16_t MIN;
+    int number;
+    uint16_t last_value;
+    uint16_t id;
+}Channel_Info_Typedef;
 
-void for_max_time(__IO uint16_t (*p)[6]);
-float location_2_Yaw( float x, float y );
-float location_2_Pitch( float x, float y );
+void for_max_time(__IO uint16_t (*p)[NOFCHANEL]);
 
 #endif
 
