@@ -8,15 +8,15 @@
 max_Typedef ADC_Channel_max_time[NOFCHANEL];
 Channel_Info_Typedef Channel_Info[NOFCHANEL]; 
 
-static uint16_t normalization(uint16_t temp,int j)
+static uint16_t normalization(uint16_t temp,int j)//归一差异化
 {
     return (temp-Channel_Info[j].MIN)/(Channel_Info[j].MAX-Channel_Info[j].MIN);
 }
 
-void for_max_time(__IO uint16_t (*p)[NOFCHANEL])
+void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
 {
 	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*NOFCHANEL);
-    for(int i=0;i<6;i++)//初始化
+    for(int i=0;i<6;i++)//初始化数据
     {
         Channel_Info[i].number=0;
         Channel_Info[i].id=0;
@@ -29,7 +29,7 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])
             {
                 ADC_Channel_max_time[j].max=p[i][j];
                 ADC_Channel_max_time[j].id=i;
-            }
+            }//峰值判别
             if(Channel_Info[j].last_value>Channel_Info[j].LOW&&(p[i][j]-Channel_Info[j].average)<Channel_Info[j].LOW\
             ||Channel_Info[j].last_value<Channel_Info[j].HIGH&&(p[i][j]-Channel_Info[j].average)>Channel_Info[j].HIGH)
             {
