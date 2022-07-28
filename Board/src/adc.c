@@ -4,8 +4,8 @@
 #include "stdio.h"
 
 // 用于存储 ADC 转换后的值
-__IO uint16_t ADC_ConvertedValue1[1000][NOFCHANEL] = {0};
-__IO uint16_t ADC_ConvertedValue2[1000][NOFCHANEL] = {0};
+__IO uint16_t ADC_ConvertedValue1[LOFCHANEL][NOFCHANEL] = {0};
+__IO uint16_t ADC_ConvertedValue2[LOFCHANEL][NOFCHANEL] = {0};
 
 uint8_t ADC_ConvertedValue_flag=0;//用于切换数组
 uint8_t ADC_ConvertedValue1_flag=0;//置一表示数组一已经传输完毕
@@ -82,7 +82,7 @@ static void ADCx_Mode_Config(void)
     // 数据源来自外设
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;
     // 缓冲区大小，应该等于数据目的地的大小
-    DMA_InitStructure.DMA_BufferSize = NOFCHANEL*1000;
+    DMA_InitStructure.DMA_BufferSize = NOFCHANEL*LOFCHANEL;
     // 外设寄存器只有一个，地址不用递增
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
     // 存储器地址递增
@@ -172,7 +172,7 @@ void DMA1_Channel1_IRQHandler()
   {
     ADC_Cmd(ADC_x,DISABLE);
     DMA_Cmd(DMA1_Channel1,DISABLE);
-    DMA1_Channel1->CNDTR=NOFCHANEL*1000;
+    DMA1_Channel1->CNDTR=NOFCHANEL*LOFCHANEL;
     if(ADC_ConvertedValue_flag==0)
     {
       DMA1_Channel1->CMAR=(uint32_t)ADC_ConvertedValue2;

@@ -5,20 +5,34 @@
 
 //单次采样时间1.125us
 
-max_Typedef ADC_Channel_max_time[6];
+max_Typedef ADC_Channel_max_time[NOFCHANEL];
+Channel_Info_Typedef Channel_Info[NOFCHANEL]; 
 
-void for_max_time(__IO uint16_t (*p)[6])
+void for_max_time(__IO uint16_t (*p)[NOFCHANEL])
 {
-	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*6);
-    for(int i=0;i<6;i++)
-        for(int j=0;j<1000;j++)
+	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*NOFCHANEL);
+    for(int i=0;i<6;i++)//初始化
+    {
+        Channel_Info[i].number=0;
+        Channel_Info[i].StdDeviation=0;
+        Channel_Info[i].id=0;
+        Channel_Info[i].last_value=Channel_Info[i].average;
+    }
+    for(int i=0;i<NOFCHANEL;i++)
+        for(int j=0;j<LOFCHANEL;j++)
         {
             if(p[i][j]>ADC_Channel_max_time[j].max)
             {
                 ADC_Channel_max_time[j].max=p[i][j];
                 ADC_Channel_max_time[j].id=i;
             }
-            
+            if(Channel_Info[j].last_value>Channel_Info[j].LOW&&(p[i][j]-Channel_Info[j].average)<Channel_Info[j].LOW\
+            ||Channel_Info[j].last_value<Channel_Info[j].HIGH&&(p[i][j]-Channel_Info[j].average)>Channel_Info[j].HIGH)
+            {
+                Channel_Info[j].number++;
+                if(!Channel_Info[j].id&&Channel_Info[j].number>Channel_Info[j].NUMBERMUST)Channel_Info[j].id=i;
+            }
+            Channel_Info[j].last_value=p[i][j]-Channel_Info[j].average;
         }
 }
 

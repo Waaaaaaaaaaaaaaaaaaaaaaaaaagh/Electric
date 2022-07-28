@@ -11,8 +11,8 @@
 #include "solution.h"
 
 // 将 ADC1 转换的电压值通过 DMA 方式传到 SRAM
-extern __IO uint16_t ADC_ConvertedValue1[1000][NOFCHANEL];
-extern __IO uint16_t ADC_ConvertedValue2[1000][NOFCHANEL];
+extern __IO uint16_t ADC_ConvertedValue1[LOFCHANEL][NOFCHANEL];
+extern __IO uint16_t ADC_ConvertedValue2[LOFCHANEL][NOFCHANEL];
 extern uint8_t ADC_ConvertedValue1_flag;//置一表示数组一已经传输完毕
 extern uint8_t ADC_ConvertedValue2_flag;
 
