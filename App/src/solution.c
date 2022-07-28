@@ -3,6 +3,8 @@
 #include "usartplus.h"
 #include "string.h"
 
+//单次采样时间1.125us
+
 max_Typedef ADC_Channel_max_time[6];
 
 void for_max_time(__IO uint16_t (*p)[6])
