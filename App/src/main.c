@@ -18,15 +18,17 @@ float ADC_ConvertedValueLocal[NOFCHANEL];
 
 int main()
 {
-	//TIM_SERVO_Init();
+	TIM_SERVO_Init();
 	OLED_init();
 	Delay_Init();
 	ray_init();
+	GPIO_EXIT_Init();
 	OLED_clear();
 	MYUSART_Init();
 	to_extern_Init();
 
-	//Servo_reset();
+	Servo_reset();
+	ray_on();
 
 	while(1)
 	{

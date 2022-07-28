@@ -7,8 +7,8 @@
 #define	RCC_APBPeriph_TIMx1					RCC_APB2Periph_TIM1
 #define	SERVO1_PORT							GPIOA
 #define SERVO1_TIM							TIM1
-#define SERVO1_TIM_CH1_PIN					GPIO_Pin_8
-#define SERVO1_TIM_CH2_PIN					GPIO_Pin_9
+#define SERVO1_Low					        GPIO_Pin_8
+#define SERVO1_High					        GPIO_Pin_9
 #define SERVO1_TIM_CH3_PIN					GPIO_Pin_10
 #define SERVO1_TIM_CH4_PIN					GPIO_Pin_11
 
