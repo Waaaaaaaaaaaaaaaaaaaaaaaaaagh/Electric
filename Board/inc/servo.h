@@ -31,6 +31,11 @@
 //#define SERVO3_TIM_CH3_PIN						GPIO_Pin_10
 //#define SERVO3_TIM_CH4_PIN						GPIO_Pin_11
 
+//#define fix
+#ifndef fix
+#define common
+#endif
+
 extern void TIM_SERVO_Init(void);
 extern void Servo_Open(void);
 extern void Servo_Close(void);

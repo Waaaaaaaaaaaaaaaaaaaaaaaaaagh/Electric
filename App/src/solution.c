@@ -36,9 +36,9 @@ float location_2_Yaw( float x, float y )/* 计算 Yaw 轴的角度 */
 {
     float angle;
     if( x >=0 )
-        angle = atanf( x/(y+17.2f) )*rad2degree;
+        angle = atanf( x/(y+19) )*rad2degree;
     else
-        angle = atanf( x/(y+17.2f) )*rad2degree;
+        angle = atanf( x/(y+19) )*rad2degree;
     return angle;
 }
 
@@ -48,14 +48,19 @@ float location_2_Yaw( float x, float y )/* 计算 Yaw 轴的角度 */
  @brief             用于将位置信息转换为 Pitch 轴角度信息
  @param     x       坐标的 x 轴值
  @param     y       坐标的 y 轴值
- @return float 
+ @return    float 
  */
+
 
 float location_2_Pitch( float x, float y )/* 计算 Pitch 轴的角度 */
 {
     float angle;
+    float u = x*x + (y+19)*(y+19);
+    float trans = sqrtf(u*(u-11));
+    float l2;
+    l2 = ( (-11 + 2*u)/trans + 2.03333333f )/( 0.03333333f + 1/trans );
 
-    angle = atanf( 152/sqrtf(x*x + y*y) )*rad2degree;
+    angle = -acosf( (l2 - 61)/60 )*rad2degree;
 
     return angle;
 }

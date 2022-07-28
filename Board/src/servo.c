@@ -177,12 +177,14 @@ void Test_Servo(void)
  @param Ch        对应的引脚
 */
 
+#ifdef fix
+
 void Servo_drive(float angle,uint16_t Ch)
 {
   static float upper = 0;
   static float lower = 0;
   uint16_t compare;
-  if( Ch == SERVO1_Low )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 左为负，右为正 */
+  if( Ch == SERVO1_Low )/* 下层舵机 *//* 对应的关系为 7 us/° *//* 左为负，右为正 *//* 最左为2112，中值为1478， */
   {
     if( angle >= lower)
     {
@@ -225,6 +227,55 @@ void Servo_drive(float angle,uint16_t Ch)
     upper = angle;
   }
 }
+#endif
+
+#ifdef common
+
+void Servo_drive(float angle,uint16_t Ch)
+{
+  uint16_t compare;
+  if( Ch == SERVO1_Low )  /* 下层舵机 *//* 左为负，右为正 *//* 最左为2112，左45为1804，中值为1482，右45为1144，最右为820 */
+  {
+    if( angle < -45 )
+    {
+      compare = 1804 - (int)( (angle + 45)*308/45 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+    else if( (angle >= -45)&&(angle < 0) )
+    {
+      compare = 1482 - (int)( angle *322/45 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+    else if( (angle >= 0)&&(angle < 45) )
+    {
+      compare = 1482 - (int)( angle *338/45 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+    else if( angle >= 45 )
+    {
+      compare = 1144 - (int)( (angle - 45) *324/45 );
+      TIM_SetCompare1(SERVO1_TIM, compare);
+    }
+      
+  }
+  if( Ch == SERVO1_High )/* 下层舵机 *//* 下为负，上为正 *//* 下90为550，水平为1526，上90为2450 */
+  {
+    // if( angle < 0 )
+    // {
+    //   compare = 1526 + (int)( angle*976/90 );
+    //   TIM_SetCompare2(SERVO1_TIM, compare);
+    // }
+    // else
+    // {
+    //   compare = 1526 + (int)( angle*924/90 );
+    //   TIM_SetCompare2(SERVO1_TIM, compare);
+    // }
+     compare = 1500 + (int)( angle*95.5/9 );
+     TIM_SetCompare2(SERVO1_TIM, compare);
+  }
+}
+
+#endif
 
 /**
  @brief           复位舵机
