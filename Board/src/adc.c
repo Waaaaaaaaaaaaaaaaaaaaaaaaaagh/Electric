@@ -116,21 +116,21 @@ static void ADCx_Mode_Config(void)
     ADC_Init(ADC_x, &ADC_InitStructure);
 
     // 配置ADC时钟为 CLK2 的 8 分频，即 9MHz
-    RCC_ADCCLKConfig(RCC_PCLK2_Div8);
+    RCC_ADCCLKConfig(RCC_PCLK2_Div2);
 
     // 配置ADC 通道的转换顺序和采样时间
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL1, 1, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL2, 2, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL3, 3, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL4, 4, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL5, 5, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL6, 6, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL7, 7, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL8, 8, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL9, 9, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL10, 10, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL11, 11, ADC_SampleTime_55Cycles5);
-    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL12, 12, ADC_SampleTime_55Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL1, 1, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL2, 2, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL3, 3, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL4, 4, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL5, 5, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL6, 6, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL7, 7, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL8, 8, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL9, 9, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL10, 10, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL11, 11, ADC_SampleTime_1Cycles5);
+    ADC_RegularChannelConfig(ADC_x, ADC_CHANNEL12, 12, ADC_SampleTime_1Cycles5);
     // 使能ADC DMA 请求
     ADC_DMACmd(ADC_x, ENABLE);
 

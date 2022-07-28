@@ -9,8 +9,8 @@ static void dma_size_cmd(int number)
     printf_dma_flag=1;
     DMA2_Channel5->CNDTR=number*4+4;
     DMA2_Channel5->CMAR=(uint32_t)send_buff;
-		USART_DMACmd(myUSARTx,USART_DMAReq_Tx,ENABLE);
-		DMA_Cmd(DMA2_Channel5,ENABLE);
+	USART_DMACmd(myUSARTx,USART_DMAReq_Tx,ENABLE);
+	DMA_Cmd(DMA2_Channel5,ENABLE);
 }
 
 static void RTX_Init()
@@ -50,9 +50,9 @@ void MYUSART_Init()
 	temp.USART_Parity=USART_Parity_No;
 	temp.USART_StopBits=USART_StopBits_1;
 	USART_Init(myUSARTx,&temp);
+    USART_NVIC_Init();
 	USART_Cmd(myUSARTx,ENABLE);
 	USART_DMACmd(myUSARTx,USART_DMAReq_Tx,DISABLE);
-	USART_NVIC_Init();
 }
 
 void USARTx_handler()

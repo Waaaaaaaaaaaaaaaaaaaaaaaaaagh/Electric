@@ -8,6 +8,7 @@
 #include "include.h"
 #include  "usartplus.h"
 #include "dma.h"
+#include "stdlib.h"
 
 // 将 ADC1 转换的电压值通过 DMA 方式传到 SRAM
 extern __IO uint16_t ADC_ConvertedValue[NOFCHANEL];
@@ -27,7 +28,8 @@ int main()
 	while(1)
 	{
 		//OLED_show8x16number(5,15,3);
-		print_plus("%d",1);
+		//print_plus("%d%d%d%d",rand()%2,rand()%3,rand()%4,rand()%5);
+		//Usart_SendByte(UART4,0x01);
 		Delay_MS(100);
 	}
 }
