@@ -18,6 +18,7 @@ void for_max_time(__IO uint16_t (*p)[6])
                 ADC_Channel_max_time[j].max=p[i][j];
                 ADC_Channel_max_time[j].id=i;
             }
+            
         }
 }
 

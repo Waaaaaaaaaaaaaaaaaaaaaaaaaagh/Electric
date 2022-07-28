@@ -38,7 +38,7 @@ static void ADCx_GPIO_Config(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
 
     // 初始化 ADC IO
-    GPIO_Init(ADC_PORT1, &GPIO_InitStructure);
+    GPIO_Init(ADC_PORT2, &GPIO_InitStructure);
 
     // 打开 ADC IO端口时钟
     //ADC_GPIO_APBxClock_FUN(ADC_GPIO_CLK2, ENABLE);
