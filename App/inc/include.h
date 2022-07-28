@@ -11,6 +11,8 @@
 #include "servo.h"
 #include "motor.h"
 #include "ray.h"
+#include "solution.h"
+#include "usartplus.h"
 
 extern __IO uint16_t ADC_ConvertedValue[NOFCHANEL];
 extern float ADC_ConvertedValueLocal[NOFCHANEL]; 

@@ -99,8 +99,8 @@ void KEY_IRQHandle1(void)
         {
           if( k%2 == 0 )
           {
-            Servo_drive(0,SERVO1_Low);
-            Servo_drive(0,SERVO1_High);
+            Servo_drive( location_2_Yaw( 0, 0 ) ,SERVO1_Low);
+            Servo_drive( location_2_Pitch( 0, 0 ) ,SERVO1_High);
           }
           else
           {
@@ -119,8 +119,8 @@ void KEY_IRQHandle1(void)
         {
           if( k%2 == 0 )
           {
-            Servo_drive(0,SERVO1_Low);
-            Servo_drive(0,SERVO1_High);
+            Servo_drive( location_2_Yaw( 80, 80 ) ,SERVO1_Low);
+            Servo_drive( location_2_Pitch( 80, 80 ) ,SERVO1_High);
           }
           else
           {
