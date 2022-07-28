@@ -23,7 +23,7 @@ void to_extern_Init()
 	temp.DMA_MemoryBaseAddr=(uint32_t)send_buff;
 	temp.DMA_MemoryDataSize=DMA_MemoryDataSize_Byte;
 	temp.DMA_PeripheralDataSize=DMA_MemoryDataSize_Byte;
-	temp.DMA_DIR=DMA_DIR_PeripheralSRC;
+	temp.DMA_DIR=DMA_DIR_PeripheralDST;
 	temp.DMA_BufferSize=1;
 	temp.DMA_PeripheralInc=DMA_PeripheralInc_Disable;
 	temp.DMA_MemoryInc=DMA_MemoryInc_Enable;
@@ -31,8 +31,8 @@ void to_extern_Init()
 	temp.DMA_Mode=DMA_Mode_Normal;
 	temp.DMA_Priority=DMA_Priority_High;
 	DMA_Init(DMA2_Channel5,&temp);
-	DMA_Cmd(DMA2_Channel5,DISABLE);
 	DMA_NVIC_Init();
+	DMA_Cmd(DMA2_Channel5,DISABLE);
 }
 
 void DMA2_Channel4_5_IRQHandler()
