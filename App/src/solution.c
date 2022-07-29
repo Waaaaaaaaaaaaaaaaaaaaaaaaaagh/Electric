@@ -70,6 +70,11 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
         if(flag_temp==0)flag[i]=1;
     }
     else flag[i]=1;
+
+    int number=0;
+    for(int i=0;i<NOFCHANEL;i++)
+    number+=flag[i];
+    if(number>3)retuen;
     //id和flag是正确的
 }
 
