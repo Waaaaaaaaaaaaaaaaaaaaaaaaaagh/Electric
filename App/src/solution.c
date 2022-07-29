@@ -1,3 +1,5 @@
+#include "stm32f10x.h"
+#include <stdint.h>
 #include "solution.h"
 #include "include.h"
 #include "string.h"
@@ -19,7 +21,7 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
     for(int i=0;i<6;i++)//初始化数据
     {
         Channel_Info[i].number=0;
-        Channel_Info[i].id=0;
+        Channel_Info[i].id=-1;
         Channel_Info[i].last_value=Channel_Info[i].average;
     }
     for(int i=0;i<NOFCHANEL;i++)
@@ -83,4 +85,153 @@ float location_2_Pitch( float x, float y )/* 计算 Pitch 轴的角度 */
     return angle;
 }
 
+/**
+ @brief             根据声音计算声音信标的位置，这是检测单峰值的版本
+ @return    void    
+ @param     McPhe   位置计算的相关数据，从右往左为0-5
+ @param     Psi     最后得出的信标位置信息
+ @param     value   拿到的麦克风声音信息,从右往左为0-5
+ */
+
+#ifdef Single                                               /* 测量单峰的形式 */
+
+void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , max_Typedef *value )
+{
+    
+
+    uint8_t far_id = 0;
+    uint8_t close_id = 0;
+    uint8_t stader[6] = {0};
+
+    for( uint8_t i=0;i<6;i++ )                              /* 判断是否是静默 */
+    {
+        if( value[i].max > Single_line )
+            stader[i] = 1;
+    }
+
+    /* 找出最远的和最近的 */
+    uint16_t max = 0;
+    uint16_t min = 65535;
+    for( uint8_t i=0;i<6;i++ )
+    {
+        if( stader[i] )
+        {
+            if(  value[i].id > max )
+            {
+                max = value[i].id;
+                far_id = i;
+            }
+            if(  value[i].id < min )
+            {
+                min = value[i].id;
+                close_id = i;
+            }
+                
+        }
+    }
+
+    /* 计算距离 *//* id*6.75us 为实际的时间 *//* 距离计算出来的单位是 cm */
+    McPhe[close_id].l = value[far_id].max*34*( (value[far_id].id - value[close_id].id)*6.75f + (far_id - close_id)*1.125f )/1000\
+                        /( value[close_id].max - value[far_id].max );
+    McPhe[far_id].l = McPhe[close_id].l + 34*( (value[far_id].id - value[close_id].id)*6.75f + (far_id - close_id)*1.125f )/1000;
+
+    /* 计算位置 */
+    if( close_id < far_id )                                     /* 说明声源在右边 */
+    {
+        float d = (McPhe[close_id].x - McPhe[far_id].x);        /* 两个麦克风之间的距离 */
+        float Cos_a = ( d*d + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d*McPhe[close_id].l );                 /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x - McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+    }
+    else                                                        /* 说明声源在左边 */
+    {
+        float d = (McPhe[far_id].x - McPhe[close_id].x);        /* 两个麦克风之间的距离 */
+        float Cos_a = ( d*d + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d*McPhe[close_id].l );                 /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x + McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+    }
+
+}
+
+#endif
+
+
+#ifdef Muti_wave                                            /* 测量多峰的形式 */
+
+void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , Channel_Info_Typedef *value )
+{
+    
+
+    uint8_t far_id = 0;
+    uint8_t middle_id = 0;
+    uint8_t close_id = 0;
+    uint8_t stader[6] = {0};
+
+    for( uint8_t i=0;i<6;i++ )                              /* 判断是否是静默 */
+    {
+        if( value[i].id != -1 )
+            stader[i] = 1;
+    }
+
+    /* 找出最远的，中间的和最近的 */
+    uint16_t max = 0;
+    uint16_t min = 65535;
+    for( uint8_t i=0;i<6;i++ )
+    {
+        if( stader[i] )
+        {
+            if(  value[i].id > max )
+            {
+                max = value[i].id;
+                middle_id = far_id;
+                far_id = i;  
+            }
+            if(  value[i].id < min )
+            {
+                min = value[i].id;
+                middle_id = close_id;   /* 两个里面都放一个是为了防止直接出现最值而不再迭代，同时这样也保证了它是中间的 */
+                close_id = i;
+            }
+                
+        }
+    }
+
+    float vt1 = 34*( (value[middle_id].id - value[close_id].id)*6.75f + (middle_id - close_id)*1.125f )/1000;
+    float vt2 = 34*( (value[far_id].id - value[close_id].id)*6.75f + (far_id - close_id)*1.125f )/1000;
+    if( close_id < far_id )                                         /* 说明声源在右边 */
+    {
+        float d1 = McPhe[middle_id].x - McPhe[far_id].x;
+        float d2 = McPhe[close_id].x - McPhe[middle_id].x;
+        float d12 = McPhe[close_id].x - McPhe[far_id].x;
+
+        McPhe[close_id].l = ( (vt2*vt2 - d12*d12)/2*d12 - (vt1*vt1 - d2*d2)/2*d2 )/( vt1/d2 - vt2/d12 );
+        McPhe[far_id].l = McPhe[close_id].l + vt2;
+
+        float Cos_a = ( d12*d12 + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d12*McPhe[close_id].l );                   /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x - McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+
+    }
+    else                                                            /* 说明声源在左边 */
+    {
+        float d1 = McPhe[far_id].x - McPhe[middle_id].x;
+        float d2 = McPhe[middle_id].x - McPhe[close_id].x;
+        float d12 = McPhe[far_id].x - McPhe[close_id].x;
+
+        McPhe[close_id].l = ( (vt2*vt2 - d12*d12)/2*d12 - (vt1*vt1 - d2*d2)/2*d2 )/( vt1/d2 - vt2/d12 );
+        McPhe[far_id].l = McPhe[close_id].l + vt2;
+
+        float Cos_a = ( d12*d12 + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d12*McPhe[close_id].l );                   /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x + McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+    }
+    
+
+}
+
+#endif
 
