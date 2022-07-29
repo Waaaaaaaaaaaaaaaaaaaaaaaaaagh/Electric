@@ -5,7 +5,7 @@
 #include "adc.h"
 
 
-#define Single_line         2500        /* µ¥·åÖµÐÅºÅµÄ´¥·¢ãÐÖµ */
+#define Single_line         2500        /* ï¿½ï¿½ï¿½ï¿½Öµï¿½ÅºÅµÄ´ï¿½ï¿½ï¿½ï¿½ï¿½Öµ */
 //#define Single
 #ifndef Single
 #define Muti_wave
@@ -13,8 +13,15 @@
 
 typedef struct 
 {
+    int id;
+    uint16_t flag;
+}channel_info_stack_typedef;
+
+typedef struct 
+{
     uint16_t max;
     uint16_t id;
+    float average;
 }max_Typedef;
 
 typedef struct
@@ -33,24 +40,24 @@ typedef struct
 
 typedef struct 
 {
-    const float x;          /* ÔÚºá×ø±êÉÏµÄÎ»ÖÃ */
-    float l;                /* ÓëÉùÒôÐÅ±êµÄ¾àÀë */
-    float h;                /* Õñ·ù *//* ÓÃÓÚ³õ²½ÅÐ¶Ï¾àÀëÐÅÏ¢ */
-    float t;                /* ÔÚÊ±¼ä´ÁÉÏµÄ¾ø¶ÔÊ±¼ä *//* µ¥Î»Îªus */
+    const float x;          /* ï¿½Úºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Î»ï¿½ï¿½ */
+    float l;                /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½Ä¾ï¿½ï¿½ï¿½ */
+    float h;                /* ï¿½ï¿½ï¿½ *//* ï¿½ï¿½ï¿½Ú³ï¿½ï¿½ï¿½ï¿½Ð¶Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ */
+    float t;                /* ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ÏµÄ¾ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ *//* ï¿½ï¿½Î»Îªus */
 }Micophone_Typedef;
 
 
 typedef struct 
 {
-    float x;                /* ºá×ø±êÉÏµÄÎ»ÖÃ */
-    float y;                /* ×Ý×ø±êÉÏµÄÎ»ÖÃ */
+    float x;                /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Î»ï¿½ï¿½ */
+    float y;                /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Î»ï¿½ï¿½ */
 }Position_Typedef;
 
 
 typedef struct 
 {
-    float real;             /* Êµ²¿ */
-	float imag;             /* Ðé²¿ */
+    float real;             /* Êµï¿½ï¿½ */
+	float imag;             /* ï¿½é²¿ */
 }INfection_Typedef;
 
 

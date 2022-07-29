@@ -7,43 +7,75 @@
 
 //单次采样时间1.125us
 
-max_Typedef ADC_Channel_max_time[NOFCHANEL];
-Channel_Info_Typedef Channel_Info[NOFCHANEL];
-__IO uint16_t q[NOFCHANEL][LOFCHANEL] = {0};
-
-static uint16_t normalization(uint16_t temp,int j)//归一差异化
-{
-    return (temp-Channel_Info[j].MIN)/(Channel_Info[j].MAX-Channel_Info[j].MIN);
-}
+//max_Typedef ADC_Channel_max_time[NOFCHANEL];
+//Channel_Info_Typedef Channel_Info[NOFCHANEL];
+//__IO uint16_t q[NOFCHANEL][LOFCHANEL] = {0};
+channel_info_stack_typedef pole_stack[6][20];
+int stack_number[6];
+uint8_t flag[6];//这个通道是否可用
+float id[6];
 
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
 {
-	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*NOFCHANEL);
-    for(int i=0;i<NOFCHANEL;i++)//初始化数据
+    memset(stack_number,0,sizeof(int)*6);
+    memset(flag,0,sizeof(uint8_t)*6);
+    for(int i=2;i<LOFCHANEL-2;i++)
+        for(int j=0;j<NOFCHANEL;j++)
+        {
+            if(p[i][j]>=p[i-1][j]&&p[i][j]>p[i-2][j]&&p[i][j]>=p[i+1][j]&&p[i][j]>p[i+2][j]&&!flag[j])
+            {
+                pole_stack[j][stack_number[j]].flag=1;
+                pole_stack[j][stack_number[j]].id=i;
+                stack_number[j]++;
+            }
+            if(p[i][j]<=p[i-1][j]&&p[i][j]<p[i-2][j]&&p[i][j]<=p[i+1][j]&&p[i][j]<p[i+2][j]&&!flag[j])
+            {
+                pole_stack[j][stack_number[j]].flag=0;
+                pole_stack[j][stack_number[j]].id=i;
+                stack_number[j]++;
+            }
+            if(stack_number[j]>=20)flag[j]=1;
+        }
+    for(int i=0;i<NOFCHANEL;i++)
+    if(flag[i]==0&&stack_number[i]>=4)
     {
-        Channel_Info[i].number=0;
-        Channel_Info[i].id=-1;
-        Channel_Info[i].last_value=Channel_Info[i].average;
+        uint8_t flag_temp=0;
+        int number=0;
+        if(abs(pole_stack[i][0].id-pole_stack[i][1].id-123)<10&&(pole_stack[i][0].flag+pole_stack[i][1].flag)==1)number++;
+        for(int j=1;j<stack_number[i]-1;j++)
+        {
+            if((pole_stack[i][j].flag+pole_stack[i][j-1].flag)==1&&(pole_stack[i][j].flag+pole_stack[i][j+1].flag)==1&&\
+            abs(pole_stack[i][j].id-pole_stack[i][j-1].id-123)<10&&abs(pole_stack[i][j].id-pole_stack[i][j+1].id-123)<10)
+            number++;
+            else number=0;
+            if(number>=4)
+            {
+                float temp=pole_stack[i][j].id;
+                if(pole_stack[i][j].flag==0)temp+=123;
+                while(temp>0)temp-=240;
+                id[i]=temp+246;
+                flag_temp=1;
+            }
+        }
+        if(abs(pole_stack[i][stack_number[i]-1].id-pole_stack[i][stack_number[i]-2].id-123)<10&&(pole_stack[i][stack_number[i]-2].flag+pole_stack[i][stack_number[i]-1].flag)==1)number++;
+        else number=0;
+        if(number>=4)
+        {
+            float temp=pole_stack[i][stack_number[i]-1].id;
+            if(pole_stack[i][stack_number[i]-1].flag==0)temp+=123;
+            while(temp>0)temp-=246;
+            id[i]=temp+246;
+            flag_temp=1;
+        }
+        if(flag_temp==0)flag[i]=1;
     }
-    for(int i=0;i<LOFCHANEL;i++)
-    print_plus("%d%d%d%d%d%d",p[i][0],p[i][1],p[i][2],p[i][3],p[i][4],p[i][5]);
-    //print_plus("%d",p[i][5]);
-        // for(int j=0;j<NOFCHANEL;j++)
-        // {
-        //     if(p[i][j]>ADC_Channel_max_time[j].max)
-        //     {
-        //         ADC_Channel_max_time[j].max=p[i][j];
-        //         ADC_Channel_max_time[j].id=i;
-        //     }//峰值判别
-        //     if(Channel_Info[j].last_value>Channel_Info[j].LOW&&(p[i][j]-Channel_Info[j].average)<Channel_Info[j].LOW\
-        //     ||Channel_Info[j].last_value<Channel_Info[j].HIGH&&(p[i][j]-Channel_Info[j].average)>Channel_Info[j].HIGH)
-        //     {
-        //         Channel_Info[j].number++;
-        //         if(!Channel_Info[j].id&&Channel_Info[j].number>Channel_Info[j].NUMBERMUST)Channel_Info[j].id=i;
-        //     }
-        //     Channel_Info[j].last_value=p[i][j]-Channel_Info[j].average;
-        //     q[j][i] = p[i][j];
-        // }
+    else flag[i]=1;
+
+    int number=0;
+    for(int i=0;i<NOFCHANEL;i++)
+    number+=flag[i];
+    if(number>3)retuen;
+    //id和flag是正确的
 }
 
 const float rad2degree = 180/3.1415926535;

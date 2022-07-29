@@ -82,6 +82,5 @@ int main()
 				for_max_time(ADC_ConvertedValue2);
 			}
 		}
-		
 	}
 }
