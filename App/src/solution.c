@@ -52,19 +52,19 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
             {
                 float temp=pole_stack[i][j].id;
                 if(pole_stack[i][j].flag==0)temp+=123;
-                while(temp>0)temp-=123;
-                id[i]=temp+123;
+                while(temp>0)temp-=240;
+                id[i]=temp+246;
                 flag_temp=1;
             }
         }
         if(abs(pole_stack[i][stack_number[i]-1].id-pole_stack[i][stack_number[i]-2].id-123)<10&&(pole_stack[i][stack_number[i]-2].flag+pole_stack[i][stack_number[i]-1].flag)==1)number++;
-        else number++;
+        else number=0;
         if(number>=4)
         {
             float temp=pole_stack[i][stack_number[i]-1].id;
             if(pole_stack[i][stack_number[i]-1].flag==0)temp+=123;
-            while(temp>0)temp-=123;
-            id[i]=temp+123;
+            while(temp>0)temp-=246;
+            id[i]=temp+246;
             flag_temp=1;
         }
         if(flag_temp==0)flag[i]=1;

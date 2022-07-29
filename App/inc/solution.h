@@ -13,6 +13,12 @@
 
 typedef struct 
 {
+    int id;
+    uint16_t flag;
+}channel_info_stack_typedef;
+
+typedef struct 
+{
     uint16_t max;
     uint16_t id;
     float average;
