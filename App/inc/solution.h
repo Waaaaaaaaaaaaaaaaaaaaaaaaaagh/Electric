@@ -47,6 +47,12 @@ typedef struct
 }Position_Typedef;
 
 
+typedef struct 
+{
+    float real;             /* Êµ²¿ */
+	float imag;             /* Ðé²¿ */
+}INfection_Typedef;
+
 
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL]);
 float location_2_Yaw( float x, float y );

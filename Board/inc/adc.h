@@ -20,7 +20,7 @@
 
 // 转换通道个数
 #define    NOFCHANEL				     6
-#define    LOFCHANEL                     1000
+#define    LOFCHANEL                     1024
 
 #define    ADC_PIN1                      GPIO_Pin_0
 #define    ADC_CHANNEL1                  ADC_Channel_0

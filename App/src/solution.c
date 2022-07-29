@@ -8,7 +8,8 @@
 //单次采样时间1.125us
 
 max_Typedef ADC_Channel_max_time[NOFCHANEL];
-Channel_Info_Typedef Channel_Info[NOFCHANEL]; 
+Channel_Info_Typedef Channel_Info[NOFCHANEL];
+__IO uint16_t q[NOFCHANEL][LOFCHANEL] = {0};
 
 static uint16_t normalization(uint16_t temp,int j)//归一差异化
 {
@@ -18,14 +19,16 @@ static uint16_t normalization(uint16_t temp,int j)//归一差异化
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
 {
 	memset(ADC_Channel_max_time,0,sizeof(max_Typedef)*NOFCHANEL);
-    for(int i=0;i<6;i++)//初始化数据
+    for(int i=0;i<NOFCHANEL;i++)//初始化数据
     {
         Channel_Info[i].number=0;
         Channel_Info[i].id=-1;
         Channel_Info[i].last_value=Channel_Info[i].average;
     }
-    for(int i=0;i<NOFCHANEL;i++)
-        for(int j=0;j<LOFCHANEL;j++)
+    for(int i=0;i<LOFCHANEL;i++)
+    // print_plus("%d%d%d%d%d%d",p[i][0],p[i][1],p[i][2],p[i][3],p[i][4],p[i][5]);
+    //print_plus("%d",p[i][0]);
+        for(int j=0;j<NOFCHANEL;j++)
         {
             if(p[i][j]>ADC_Channel_max_time[j].max)
             {
@@ -39,6 +42,7 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
                 if(!Channel_Info[j].id&&Channel_Info[j].number>Channel_Info[j].NUMBERMUST)Channel_Info[j].id=i;
             }
             Channel_Info[j].last_value=p[i][j]-Channel_Info[j].average;
+            q[j][i] = p[i][j];
         }
 }
 
@@ -160,7 +164,7 @@ void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , max_Typedef *valu
 
 #ifdef Muti_wave                                            /* 测量多峰的形式 */
 
-void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , Channel_Info_Typedef *value )
+void search( Micophone_Typedef *McPhe, Position_Typedef *Psi, Channel_Info_Typedef *value )
 {
     
 
@@ -234,4 +238,13 @@ void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , Channel_Info_Type
 }
 
 #endif
+
+
+
+void New_search( Micophone_Typedef *McPhe, Position_Typedef *Psi, INfection_Typedef *Out )
+{
+
+}
+
+
 

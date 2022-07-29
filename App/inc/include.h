@@ -14,6 +14,7 @@
 #include "solution.h"
 #include "usartplus.h"
 #include "dma.h"
+#include "fft.h"
 
 extern __IO uint16_t ADC_ConvertedValue[NOFCHANEL];
 extern float ADC_ConvertedValueLocal[NOFCHANEL]; 
