@@ -167,3 +167,6 @@ Project/Objects/solution.d
 Project/Objects/solution.o
 Project/example.uvguix.a2230
 Project/example.uvguix.a2230
+Project/Objects/fft.crf
+Project/Objects/fft.d
+Project/Objects/fft.o

@@ -99,13 +99,13 @@ void KEY_IRQHandle1(void)
         {
           if( k%2 == 0 )
           {
-            Servo_drive( location_2_Yaw( 0, 0 ) ,SERVO1_Low);
-            Servo_drive( location_2_Pitch( 0, 0 ) ,SERVO1_High);
+            Servo_drive( location_2_Yaw( -160, 320 ) ,SERVO1_Low);
+            Servo_drive( location_2_Pitch( -160, 320 ) ,SERVO1_High);
           }
           else
           {
-            Servo_drive(45,SERVO1_Low);
-            Servo_drive(60,SERVO1_High);
+            Servo_drive(location_2_Yaw( -240, 240 ),SERVO1_Low);
+            Servo_drive(location_2_Pitch( -240, 240 ),SERVO1_High);
           }
            
         }
@@ -114,19 +114,11 @@ void KEY_IRQHandle1(void)
 
     if (EXTI_GetFlagStatus(KEY2_EXTI_LINE))
     {
-      k++;
         if (KEY2 == 0)
         {
-          if( k%2 == 0 )
-          {
-            Servo_drive( location_2_Yaw( 80, 80 ) ,SERVO1_Low);
-            Servo_drive( location_2_Pitch( 80, 80 ) ,SERVO1_High);
-          }
-          else
-          {
-            Servo_drive(-45,SERVO1_Low);
-            Servo_drive(-60,SERVO1_High);
-          }
+
+           Servo_drive(-90,SERVO1_Low);
+           Servo_drive(-90,SERVO1_High);
            
         }
         EXTI_ClearITPendingBit(KEY2_EXTI_LINE);

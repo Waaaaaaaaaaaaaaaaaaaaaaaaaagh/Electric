@@ -65,7 +65,8 @@ void USARTx_handler()
 
 void print_plus(char*fmt,...)
 {
-    if(printf_dma_flag)return;
+    //if(printf_dma_flag)return;
+    while(printf_dma_flag);
     int number=0;
     float fval;
     va_list ap;

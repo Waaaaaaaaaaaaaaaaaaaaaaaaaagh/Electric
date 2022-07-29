@@ -6,15 +6,34 @@
 ******************************************************************/
 #include "stm32f10x.h"
 #include "include.h"
-#include  "usartplus.h"
-#include "dma.h"
-#include "solution.h"
 
 // 将 ADC1 转换的电压值通过 DMA 方式传到 SRAM
 extern __IO uint16_t ADC_ConvertedValue1[LOFCHANEL][NOFCHANEL];
 extern __IO uint16_t ADC_ConvertedValue2[LOFCHANEL][NOFCHANEL];
 extern uint8_t ADC_ConvertedValue1_flag;//置一表示数组一已经传输完毕
 extern uint8_t ADC_ConvertedValue2_flag;
+
+Micophone_Typedef micophone[6] = 
+{
+	{
+		.x = 24.4
+	},
+	{
+		.x = 14.4
+	},
+	{
+		.x = 4.4
+	},
+	{
+		.x = -4.4
+	},
+	{
+		.x = -14.4
+	},
+	{
+		.x = -24.4
+	}
+};
 
 // 局部变量，用于保存转换计算后的电压值
 //float ADC_ConvertedValueLocal[NOFCHANEL];
@@ -33,8 +52,9 @@ int main()
 	
 
 	Servo_reset();
-	ray_on();
+	ray_on();					/* 调试使用 */
 
+	
 	while(1)
 	{
 		if(ADC_ConvertedValue1_flag||ADC_ConvertedValue2_flag)
