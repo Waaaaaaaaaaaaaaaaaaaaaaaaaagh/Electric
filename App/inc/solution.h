@@ -64,6 +64,7 @@ void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , max_Typedef *valu
 #ifdef Muti_wave
 void search( Micophone_Typedef *McPhe, Position_Typedef *Psi , Channel_Info_Typedef *value );
 #endif
+void New_search( Micophone_Typedef *McPhe, Position_Typedef *Psi, float *id, uint8_t *Flag );
 
 #endif
 

@@ -26,24 +26,24 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
         Channel_Info[i].last_value=Channel_Info[i].average;
     }
     for(int i=0;i<LOFCHANEL;i++)
-    // print_plus("%d%d%d%d%d%d",p[i][0],p[i][1],p[i][2],p[i][3],p[i][4],p[i][5]);
-    //print_plus("%d",p[i][0]);
-        for(int j=0;j<NOFCHANEL;j++)
-        {
-            if(p[i][j]>ADC_Channel_max_time[j].max)
-            {
-                ADC_Channel_max_time[j].max=p[i][j];
-                ADC_Channel_max_time[j].id=i;
-            }//峰值判别
-            if(Channel_Info[j].last_value>Channel_Info[j].LOW&&(p[i][j]-Channel_Info[j].average)<Channel_Info[j].LOW\
-            ||Channel_Info[j].last_value<Channel_Info[j].HIGH&&(p[i][j]-Channel_Info[j].average)>Channel_Info[j].HIGH)
-            {
-                Channel_Info[j].number++;
-                if(!Channel_Info[j].id&&Channel_Info[j].number>Channel_Info[j].NUMBERMUST)Channel_Info[j].id=i;
-            }
-            Channel_Info[j].last_value=p[i][j]-Channel_Info[j].average;
-            q[j][i] = p[i][j];
-        }
+    print_plus("%d%d%d%d%d%d",p[i][0],p[i][1],p[i][2],p[i][3],p[i][4],p[i][5]);
+    //print_plus("%d",p[i][5]);
+        // for(int j=0;j<NOFCHANEL;j++)
+        // {
+        //     if(p[i][j]>ADC_Channel_max_time[j].max)
+        //     {
+        //         ADC_Channel_max_time[j].max=p[i][j];
+        //         ADC_Channel_max_time[j].id=i;
+        //     }//峰值判别
+        //     if(Channel_Info[j].last_value>Channel_Info[j].LOW&&(p[i][j]-Channel_Info[j].average)<Channel_Info[j].LOW\
+        //     ||Channel_Info[j].last_value<Channel_Info[j].HIGH&&(p[i][j]-Channel_Info[j].average)>Channel_Info[j].HIGH)
+        //     {
+        //         Channel_Info[j].number++;
+        //         if(!Channel_Info[j].id&&Channel_Info[j].number>Channel_Info[j].NUMBERMUST)Channel_Info[j].id=i;
+        //     }
+        //     Channel_Info[j].last_value=p[i][j]-Channel_Info[j].average;
+        //     q[j][i] = p[i][j];
+        // }
 }
 
 const float rad2degree = 180/3.1415926535;
@@ -239,12 +239,104 @@ void search( Micophone_Typedef *McPhe, Position_Typedef *Psi, Channel_Info_Typed
 
 #endif
 
+/**
+ @brief             用于计算声音信标的位置
+ @return    void
+ @param     McPhe   麦克风的位置信息
+ @param     Psi     声音信标的位置信息
+ @param     id      波形的峰值位置信息
+ @param     Flag    波形的有效位，决定是否有效，为 1 为无效
+ */
 
-
-void New_search( Micophone_Typedef *McPhe, Position_Typedef *Psi, INfection_Typedef *Out )
+void New_search( Micophone_Typedef *McPhe, Position_Typedef *Psi, float *id, uint8_t *Flag )
 {
+    
+    uint8_t far_id = 0;
+    uint8_t middle_id = 0;
+    uint8_t close_id = 0;
+    uint8_t k = 0;                                          /* 最初是有几个通道的值是可用的，后来是有几个通道的值需要减一个周期 */
+    //const uint8_t length = 246;                           /* 一个周期的数组长度为 246 */
+    uint8_t rank[6] = {0};
+
+    for( uint8_t i=0;i<6;i++ )
+    {
+        if( !Flag[i] )
+        {
+            rank[k] = i;                                    /* 存的是通道的编号 */
+            k++;                                            /* 计算得出有几个通道是能用的 */
+        }  
+    }
+
+    for( uint8_t i=0;i<k;i++ )                              /* 将所有值都化作一个区间内 */
+    {
+        for( uint8_t j=i+1;j<k;j++ )
+        {
+            if( id[rank[i]] - id[rank[j]] > 123 )
+                id[rank[i]] -= 246;
+            if( id[rank[i]] - id[rank[j]] < -123 )
+                id[rank[j]] -= 246;
+        }
+        
+    }
+
+
+    /* 找出最远的，中间的和最近的 */
+    uint16_t max = 0;
+    uint16_t min = 65535;
+    
+    for( uint8_t i=0;i<6;i++ )
+    {
+        if( !Flag[i] )
+        {
+            if(  id[i] > max )
+            {
+                max = id[i];
+                middle_id = far_id;
+                far_id = i;  
+            }
+            if(  id[i] < min )
+            {
+                min = id[i];
+                middle_id = close_id;
+                close_id = i;
+            }
+                
+        }
+    }
+
+    float vt1 = 34*( (id[middle_id] - id[close_id])*6.75f + (middle_id - close_id)*1.125f )/1000;
+    float vt2 = 34*( (id[far_id] - id[close_id])*6.75f + (far_id - close_id)*1.125f )/1000;
+    if( close_id < far_id )                                         /* 说明声源在右边 */
+    {
+        float d1 = McPhe[middle_id].x - McPhe[far_id].x;
+        float d2 = McPhe[close_id].x - McPhe[middle_id].x;
+        float d12 = McPhe[close_id].x - McPhe[far_id].x;
+
+        McPhe[close_id].l = ( (vt2*vt2 - d12*d12)/2*d12 - (vt1*vt1 - d2*d2)/2*d2 )/( vt1/d2 - vt2/d12 );
+        McPhe[far_id].l = McPhe[close_id].l + vt2;
+
+        float Cos_a = ( d12*d12 + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d12*McPhe[close_id].l );                   /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x - McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+
+    }
+    else                                                            /* 说明声源在左边 */
+    {
+        float d1 = McPhe[far_id].x - McPhe[middle_id].x;
+        float d2 = McPhe[middle_id].x - McPhe[close_id].x;
+        float d12 = McPhe[far_id].x - McPhe[close_id].x;
+
+        McPhe[close_id].l = ( (vt2*vt2 - d12*d12)/2*d12 - (vt1*vt1 - d2*d2)/2*d2 )/( vt1/d2 - vt2/d12 );
+        McPhe[far_id].l = McPhe[close_id].l + vt2;
+
+        float Cos_a = ( d12*d12 + McPhe[close_id].l*McPhe[close_id].l - McPhe[far_id].l*McPhe[far_id].l )\
+                    /( 2*d12*McPhe[close_id].l );                   /* 计算侧斜角的余弦值 */
+        Psi->x = McPhe[close_id].x + McPhe[close_id].l*Cos_a;
+        Psi->y = McPhe[close_id].l*sqrtf( 1 - Cos_a*Cos_a );
+    }
+    
 
 }
-
 
 
