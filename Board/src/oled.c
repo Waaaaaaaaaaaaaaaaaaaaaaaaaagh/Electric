@@ -246,13 +246,14 @@ void OLED_show8x16number(uint8_t x, uint8_t y, int number)
     int a = 18;
     while (1)
     {
-        if (!number) //当数字为0时跳�?
-        {
-            break;
-        }
+        
         num[a] = number % 10 + '0';
         number /= 10;
         a--;
+				if (!number) //当数字为0时跳�?
+        {
+            break;
+        }
     }
     OLED_show8x16string(x + 6, y, num + a + 1);
 }

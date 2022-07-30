@@ -49,14 +49,14 @@ Position_Typedef taget = {0};
 KalmanFilter_Typedef kalman_yaw = 
 {
     .p = 10,
-    .r = 2.5,
-    .q = 0.1
+    .r = 25,
+    .q = 0.05
 };
 KalmanFilter_Typedef kalman_pitch = 
 {
     .p = 10,
-    .r = 2.5,
-    .q = 0.1
+    .r = 25,
+    .q = 0.05
 };
 
 static float KalmanFilter(float inData, KalmanFilter_Typedef *filter)
@@ -134,10 +134,12 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
 
     Yaw = location_2_Yaw( taget.x, taget.y );
     Pitch = location_2_Pitch( taget.x, taget.y );
-
-    angle = (int)atanf( taget.x/taget.y )*rad2degree;
-    Y = (int)(taget.y);
-    print_plus("%d",Y);
+		if( taget.y == 0 )
+			angle = 0;
+		else
+			angle = (int)(atanf( taget.x/taget.y )*rad2degree);
+		Y = (int)(taget.y);
+    //print_plus("%d",Y);
     //  /* 对 X 轴进行低通滤波 */
     // if (Last_data_p == 0)
     // {
@@ -167,12 +169,13 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
     //id和flag是正确的
     my_times++;
     
-    if( my_times > 5 )
+    if( my_times > 25 )
     {
-        OLED_show6x8number(1, 1, angle);
-        OLED_show6x8number(1, 3, Y);
+		OLED_clear();
+        OLED_show8x16number(1, 1, angle);
+        OLED_show8x16number(1, 3, Y);
     }
-    if( my_times > 10 )
+    if( my_times > 50 )
         ray_on();
 }
 
