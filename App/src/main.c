@@ -13,27 +13,6 @@ extern __IO uint16_t ADC_ConvertedValue2[LOFCHANEL][NOFCHANEL];
 extern uint8_t ADC_ConvertedValue1_flag;//置一表示数组一已经传输完毕
 extern uint8_t ADC_ConvertedValue2_flag;
 
-Micophone_Typedef micophone[6] = 
-{
-	{
-		.x = 24.4
-	},
-	{
-		.x = 14.4
-	},
-	{
-		.x = 4.4
-	},
-	{
-		.x = -4.4
-	},
-	{
-		.x = -14.4
-	},
-	{
-		.x = -24.4
-	}
-};
 
 // 局部变量，用于保存转换计算后的电压值
 //float ADC_ConvertedValueLocal[NOFCHANEL];

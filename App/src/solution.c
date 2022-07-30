@@ -11,24 +11,61 @@
 //Channel_Info_Typedef Channel_Info[NOFCHANEL];
 //__IO uint16_t q[NOFCHANEL][LOFCHANEL] = {0};
 channel_info_stack_typedef pole_stack[6][20];
+float low_adc[LOFCHANEL][NOFCHANEL];
 int stack_number[6];
 uint8_t flag[6];//这个通道是否可用
 float id[6];
+
+int myabs(int a)
+{
+	return a<0?-a:a;
+}
+
+
+Micophone_Typedef micophone[6] = 
+{
+	{
+		.x = 24.4
+	},
+	{
+		.x = 14.4
+	},
+	{
+		.x = 4.4
+	},
+	{
+		.x = -4.4
+	},
+	{
+		.x = -14.4
+	},
+	{
+		.x = -24.4
+	}
+};
+
+Position_Typedef taget = {0};
+
 
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
 {
     memset(stack_number,0,sizeof(int)*6);
     memset(flag,0,sizeof(uint8_t)*6);
+		for(int i=0;i<6;i++)
+		low_adc[0][i]=p[0][i];
+		for(int i=1;i<LOFCHANEL;i++)
+        for(int j=0;j<NOFCHANEL;j++)
+		low_adc[i][j]=low_adc[i-1][j]*0.99+0.01*p[i][j];
     for(int i=2;i<LOFCHANEL-2;i++)
         for(int j=0;j<NOFCHANEL;j++)
         {
-            if(p[i][j]>=p[i-1][j]&&p[i][j]>p[i-2][j]&&p[i][j]>=p[i+1][j]&&p[i][j]>p[i+2][j]&&!flag[j])
+            if(low_adc[i][j]>low_adc[i-2][j]&&low_adc[i][j]>=low_adc[i-1][j]&&low_adc[i][j]>low_adc[i+2][j]&&low_adc[i][j]>=low_adc[i+1][j]&&!flag[j])
             {
                 pole_stack[j][stack_number[j]].flag=1;
                 pole_stack[j][stack_number[j]].id=i;
                 stack_number[j]++;
             }
-            if(p[i][j]<=p[i-1][j]&&p[i][j]<p[i-2][j]&&p[i][j]<=p[i+1][j]&&p[i][j]<p[i+2][j]&&!flag[j])
+            if(low_adc[i][j]<low_adc[i-2][j]&&low_adc[i][j]<=low_adc[i-1][j]&&low_adc[i][j]<low_adc[i+2][j]&&low_adc[i][j]>=low_adc[i+1][j]&&!flag[j])
             {
                 pole_stack[j][stack_number[j]].flag=0;
                 pole_stack[j][stack_number[j]].id=i;
@@ -37,44 +74,32 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
             if(stack_number[j]>=20)flag[j]=1;
         }
     for(int i=0;i<NOFCHANEL;i++)
-    if(flag[i]==0&&stack_number[i]>=4)
+    if(flag[i]==0&&stack_number[i]>=2)
     {
-        uint8_t flag_temp=0;
-        int number=0;
-        if(abs(pole_stack[i][0].id-pole_stack[i][1].id-123)<10&&(pole_stack[i][0].flag+pole_stack[i][1].flag)==1)number++;
-        for(int j=1;j<stack_number[i]-1;j++)
+        for(int j=0;j<stack_number[i]-1;j++)
         {
-            if((pole_stack[i][j].flag+pole_stack[i][j-1].flag)==1&&(pole_stack[i][j].flag+pole_stack[i][j+1].flag)==1&&\
-            abs(pole_stack[i][j].id-pole_stack[i][j-1].id-123)<10&&abs(pole_stack[i][j].id-pole_stack[i][j+1].id-123)<10)
-            number++;
-            else number=0;
-            if(number>=4)
-            {
-                float temp=pole_stack[i][j].id;
-                if(pole_stack[i][j].flag==0)temp+=123;
-                while(temp>0)temp-=240;
-                id[i]=temp+246;
-                flag_temp=1;
-            }
+					if(myabs(pole_stack[i][j+1].id-pole_stack[i][j].id-123)<20&&pole_stack[i][j].flag+pole_stack[i][j+1].flag==1)
+					{
+						int temp=pole_stack[i][j].id;
+						if(pole_stack[i][j].flag==0)temp+=123;
+						while(temp>0)temp-=246;
+						temp+=246;
+						flag[i]=0;
+						id[i]=temp;
+						break;
+					}
+					flag[i]=1;
         }
-        if(abs(pole_stack[i][stack_number[i]-1].id-pole_stack[i][stack_number[i]-2].id-123)<10&&(pole_stack[i][stack_number[i]-2].flag+pole_stack[i][stack_number[i]-1].flag)==1)number++;
-        else number=0;
-        if(number>=4)
-        {
-            float temp=pole_stack[i][stack_number[i]-1].id;
-            if(pole_stack[i][stack_number[i]-1].flag==0)temp+=123;
-            while(temp>0)temp-=246;
-            id[i]=temp+246;
-            flag_temp=1;
-        }
-        if(flag_temp==0)flag[i]=1;
     }
     else flag[i]=1;
 
     int number=0;
     for(int i=0;i<NOFCHANEL;i++)
     number+=flag[i];
-    if(number>3)retuen;
+    if(number>3)return;
+    New_search(micophone,&taget,id,flag);
+    Servo_drive( location_2_Yaw( taget.x, taget.y ), SERVO1_Low);
+    Servo_drive( location_2_Pitch( taget.x, taget.y ), SERVO1_High);
     //id和flag是正确的
 }
 
