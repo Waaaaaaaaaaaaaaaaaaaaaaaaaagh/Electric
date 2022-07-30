@@ -61,6 +61,16 @@ typedef struct
 }INfection_Typedef;
 
 
+typedef struct 
+{
+    float out;              /* 输出值 */
+	float p;                /* 初始方差 */
+    float q;                /* 过程噪声 */
+    float r;                /* 观测噪声 */
+    float kg;               /* 卡尔曼增益*/
+}KalmanFilter_Typedef;
+
+
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL]);
 float location_2_Yaw( float x, float y );
 float location_2_Pitch( float x, float y );

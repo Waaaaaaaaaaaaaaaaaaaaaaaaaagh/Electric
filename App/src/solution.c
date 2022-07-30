@@ -15,6 +15,7 @@ float low_adc[LOFCHANEL][NOFCHANEL];
 int stack_number[6];
 uint8_t flag[6];//这个通道是否可用
 float id[6];
+const float rad2degree = 180/3.1415926535;
 
 int myabs(int a)
 {
@@ -45,6 +46,30 @@ Micophone_Typedef micophone[6] =
 };
 
 Position_Typedef taget = {0};
+KalmanFilter_Typedef kalman_yaw = 
+{
+    .p = 10,
+    .r = 2.5,
+    .q = 0.1
+};
+KalmanFilter_Typedef kalman_pitch = 
+{
+    .p = 10,
+    .r = 2.5,
+    .q = 0.1
+};
+
+static float KalmanFilter(float inData, KalmanFilter_Typedef *filter)
+{
+ 
+    filter->p += filter->q;
+    filter->kg = filter->p / ( filter->p + filter->r ); //计算卡尔曼增益
+    filter->out = filter->out + (filter->kg * (inData - filter->out)); //计算本次滤波估计值
+    filter->p = (1 - filter->kg) * filter->p; //更新测量方差
+    
+    return filter->out;
+}
+
 
 
 void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
@@ -94,16 +119,62 @@ void for_max_time(__IO uint16_t (*p)[NOFCHANEL])//数据的处理
     else flag[i]=1;
 
     int number=0;
+    static float Last_data_p = 0;
+    static float Last_data_y = 0;
+    static float my_k = 0.25;
+    static int Y = 0;
+    static int angle = 0;
+    static uint8_t my_times = 0;
+    static float Yaw = 0;
+    static float Pitch = 0;
     for(int i=0;i<NOFCHANEL;i++)
     number+=flag[i];
     if(number>3)return;
     New_search(micophone,&taget,id,flag);
-    Servo_drive( location_2_Yaw( taget.x, taget.y ), SERVO1_Low);
-    Servo_drive( location_2_Pitch( taget.x, taget.y ), SERVO1_High);
-    //id和flag是正确的
-}
 
-const float rad2degree = 180/3.1415926535;
+    Yaw = location_2_Yaw( taget.x, taget.y );
+    Pitch = location_2_Pitch( taget.x, taget.y );
+
+    angle = (int)atanf( taget.x/taget.y )*rad2degree;
+    Y = (int)(taget.y);
+    print_plus("%d",Y);
+    //  /* 对 X 轴进行低通滤波 */
+    // if (Last_data_p == 0)
+    // {
+    //     Last_data_p = Pitch;
+    // }
+    // if( Pitch - Last_data_p > 5 )
+    //     Pitch  = Last_data_p + 5;
+    // Pitch = my_k * Pitch + ( 1 - my_k ) * Last_data_p;
+    // Last_data_p = Pitch;
+
+    // /* 对 Y 轴进行低通滤波 */
+    // if (Last_data_y == 0)
+    // {
+    //     Last_data_y = Yaw;
+    // }
+    // if( Yaw - Last_data_y > 5 )
+    //     Yaw  = Last_data_y + 5;
+
+    // Yaw = my_k * Yaw + ( 1 - my_k ) * Last_data_y;
+    // Last_data_y = Yaw;
+
+    Yaw   = KalmanFilter(Yaw,&kalman_yaw);
+    Pitch = KalmanFilter(Pitch,&kalman_pitch);
+
+    Servo_drive( Yaw, SERVO1_Low);
+    Servo_drive( Pitch, SERVO1_High);
+    //id和flag是正确的
+    my_times++;
+    
+    if( my_times > 5 )
+    {
+        OLED_show6x8number(1, 1, angle);
+        OLED_show6x8number(1, 3, Y);
+    }
+    if( my_times > 10 )
+        ray_on();
+}
 
 
 /**

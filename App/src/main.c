@@ -31,7 +31,7 @@ int main()
 	
 
 	Servo_reset();
-	ray_on();					/* 调试使用 */
+	//ray_on();					/* 调试使用 */
 
 	
 	while(1)
